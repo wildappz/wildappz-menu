@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Menu</title>
+<style>
+:root{--bg:#fff7ec;--card:#fff;--text:#2b2118;--sub:#7a6a5a;--accent:#c2410c}
+body[data-theme=dark]{--bg:#16130f;--card:#221d17;--text:#f5ede2;--sub:#a99985;--accent:#f59e0b}
+body[data-theme=fresh]{--bg:#ecfdf5;--card:#fff;--text:#12301f;--sub:#527061;--accent:#059669}
+body[data-theme=coffee]{--bg:#efe3d3;--card:#fbf5ec;--text:#3b2a1e;--sub:#80644c;--accent:#6f4e37}
+body[data-theme=classic]{--bg:#f4f4f5;--card:#fff;--text:#18181b;--sub:#71717a;--accent:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,sans-serif}
+header{padding:32px 20px 16px;text-align:center}
+h1{margin:0;font-size:26px;color:var(--accent)}
+header p{margin:6px 0 0;color:var(--sub)}
+nav{display:flex;gap:8px;overflow-x:auto;padding:8px 16px;position:sticky;top:0;background:var(--bg)}
+nav a{white-space:nowrap;padding:6px 14px;border-radius:99px;background:var(--card);color:var(--text);text-decoration:none;font-size:14px}
+main{padding:0 16px 24px;max-width:640px;margin:auto}
+h2{font-size:18px;margin:24px 4px 8px;color:var(--accent)}
+.item{background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
+.item.off{opacity:.45}.n{font-weight:600}.d{color:var(--sub);font-size:14px}
+.p{text-align:right;white-space:nowrap;font-weight:600}
+.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;border:2px solid}
+.v{border-color:#16a34a}.nv{border-color:#dc2626}
+#msg{text-align:center;padding:60px 20px;color:var(--sub)}
+footer{text-align:center;padding:16px;font-size:12px;color:var(--sub)}footer a{color:var(--sub)}
+</style></head>
+<body data-theme="warm">
+<header id="head"></header><nav id="nav"></nav>
+<main id="main"><div id="msg">Loading menu…</div></main>
+<footer><a id="rep" href="#">Report this menu</a></footer>
+<script>
+const API='https://api.wildappz.in/menus/', SUPPORT='help@wildappz.in';
+const $=id=>document.getElementById(id);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const id=(new URLSearchParams(location.search).get('m')||'').toLowerCase();
+const ck='menu:'+id;
+$('rep').href='mailto:'+SUPPORT+'?subject='+encodeURIComponent('Report menu '+id);
+const money=v=>typeof v==='number'?'₹'+v:String(v);
+function render(m){
+  document.title=m.name;document.body.dataset.theme=m.theme||'warm';
+  const h=$('head');h.textContent='';h.append(el('h1',null,m.name));
+  if(m.data.tagline)h.append(el('p',null,m.data.tagline));
+  const nav=$('nav'),main=$('main');nav.textContent='';main.textContent='';
+  (m.data.sections||[]).forEach((s,i)=>{
+    const a=el('a',null,s.title);a.href='#s'+i;nav.append(a);
+    const t=el('h2',null,s.title);t.id='s'+i;main.append(t);
+    (s.items||[]).forEach(it=>{
+      const row=el('div','item'+(it.available===false?' off':'')),l=el('div'),n=el('div','n');
+      if(it.veg!==undefined)n.append(el('span','dot '+(it.veg?'v':'nv')));
+      n.append(document.createTextNode(it.name||''));l.append(n);
+      if(it.desc)l.append(el('div','d',it.desc));
+      if(it.available===false)l.append(el('div','d','Not available right now'));
+      const p=el('div','p');
+      if(it.variants&&it.variants.length)p.textContent=it.variants.map(v=>v.label+' '+money(v.price)).join(' · ');
+      else if(it.price!=null&&it.price!=='')p.textContent=money(it.price);
+      row.append(l,p);main.append(row);
+    });
+  });
+}
+function fail(t){$('nav').textContent='';$('main').textContent='';$('main').append(el('div',null,t)).id='msg'}
+if(!/^[a-z0-9]{8}$/.test(id))fail('Menu not found.');
+else{
+  let shown=false;
+  try{const c=localStorage.getItem(ck);if(c){render(JSON.parse(c));shown=true}}catch(e){}   // instant on slow internet
+  fetch(API+id).then(async r=>{
+    if(r.status===404){try{localStorage.removeItem(ck)}catch(e){}fail('This menu is no longer available.');return}
+    const m=await r.json();render(m);try{localStorage.setItem(ck,JSON.stringify(m))}catch(e){}
+  }).catch(()=>{if(!shown)fail('Could not load the menu. Check your connection.')});
+}
+</script></body></html>
