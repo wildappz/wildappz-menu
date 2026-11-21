@@ -1,72 +1,131 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Menu</title>
 <style>
-:root{--bg:#fff7ec;--card:#fff;--text:#2b2118;--sub:#7a6a5a;--accent:#c2410c}
-body[data-theme=dark]{--bg:#16130f;--card:#221d17;--text:#f5ede2;--sub:#a99985;--accent:#f59e0b}
+:root{--bg:#fff7ec;--card:#fff;--text:#2b2118;--sub:#7a6a5a;--accent:#c2410c;--on:#fff;--ff:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--fh:var(--ff)}
+body[data-theme=dark]{--bg:#16130f;--card:#221d17;--text:#f5ede2;--sub:#a99985;--accent:#f59e0b;--on:#16130f}
 body[data-theme=fresh]{--bg:#ecfdf5;--card:#fff;--text:#12301f;--sub:#527061;--accent:#059669}
 body[data-theme=coffee]{--bg:#efe3d3;--card:#fbf5ec;--text:#3b2a1e;--sub:#80644c;--accent:#6f4e37}
 body[data-theme=classic]{--bg:#f4f4f5;--card:#fff;--text:#18181b;--sub:#71717a;--accent:#2563eb}
+body[data-theme=lightred]{--bg:#fff;--card:#fff6f5;--text:#1c1917;--sub:#78716c;--accent:#e11d2e}
+body[data-theme=noirgold]{--bg:#15130f;--card:#201c15;--text:#f3ead7;--sub:#a89c82;--accent:#e0a526;--on:#15130f;--fh:Georgia,"Times New Roman",serif}
+body[data-theme=honey]{--bg:#fbf1d9;--card:#fff9e8;--text:#3a2a14;--sub:#85704d;--accent:#c97f00;--fh:Georgia,"Times New Roman",serif}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,sans-serif}
-header{padding:32px 20px 16px;text-align:center}
-h1{margin:0;font-size:26px;color:var(--accent)}
-header p{margin:6px 0 0;color:var(--sub)}
-nav{display:flex;gap:8px;overflow-x:auto;padding:8px 16px;position:sticky;top:0;background:var(--bg)}
-nav a{white-space:nowrap;padding:6px 14px;border-radius:99px;background:var(--card);color:var(--text);text-decoration:none;font-size:14px}
-main{padding:0 16px 24px;max-width:640px;margin:auto}
-h2{font-size:18px;margin:24px 4px 8px;color:var(--accent)}
-.item{background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
-.item.off{opacity:.45}.n{font-weight:600}.d{color:var(--sub);font-size:14px}
-.p{text-align:right;white-space:nowrap;font-weight:600}
-.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;border:2px solid}
-.v{border-color:#16a34a}.nv{border-color:#dc2626}
-#msg{text-align:center;padding:60px 20px;color:var(--sub)}
+html{scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 var(--ff);padding-bottom:110px}
+header{padding:calc(36px + env(safe-area-inset-top,0px)) 20px 18px;text-align:center;background:linear-gradient(var(--bg),color-mix(in srgb,var(--accent) 12%,var(--bg)))}
+h1{margin:0;font:700 30px/1.15 var(--fh);color:var(--accent)}
+header p{margin:8px 0 0;color:var(--sub)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px 6px;border-bottom:1px solid color-mix(in srgb,var(--text) 8%,transparent)}
+.row{max-width:640px;margin:0 auto}
+#q{width:100%;padding:11px 16px;border-radius:99px;border:1px solid color-mix(in srgb,var(--text) 15%,transparent);background:var(--card);color:var(--text);font:inherit}
+#q:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:flex;gap:6px;margin-top:8px}
+.seg button,nav a{border:1px solid color-mix(in srgb,var(--text) 14%,transparent);background:var(--card);color:var(--text);border-radius:99px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--on);border-color:var(--accent)}
+nav{display:flex;gap:6px;overflow-x:auto;padding:8px 0 4px}
+main{padding:4px 16px;max-width:640px;margin:0 auto}
+h2{font:700 20px var(--fh);margin:26px 2px 10px;color:var(--accent)}
+.item{background:var(--card);border:1px solid color-mix(in srgb,var(--text) 8%,transparent);border-radius:16px;padding:13px 15px;margin-bottom:9px;display:flex;justify-content:space-between;gap:14px}
+.item.off{opacity:.5}.n{font-weight:600}.d{color:var(--sub);font-size:14px;margin-top:2px}
+.p{text-align:right;white-space:nowrap;font-weight:700;color:var(--accent)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;border:2px solid}.v{border-color:#16a34a}.nv{border-color:#dc2626}
+#msg{text-align:center;padding:50px 20px;color:var(--sub)}
 footer{text-align:center;padding:16px;font-size:12px;color:var(--sub)}footer a{color:var(--sub)}
+#fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:8;background:var(--accent);color:var(--on);border:0;border-radius:99px;padding:14px 22px;font:700 15px var(--ff);box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer}
+#fab b{display:inline-block;min-width:20px;margin-left:8px;border-radius:99px;background:var(--on);color:var(--accent);font-size:12px;padding:1px 6px}
+#shade{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9;display:none}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--bg);color:var(--text);border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:75vh;overflow:auto;transform:translateY(100%);transition:transform .25s}
+#sheet.open{transform:none}
+.opt{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid color-mix(in srgb,var(--text) 8%,transparent)}
+.opt input{width:20px;height:20px;accent-color:var(--accent)}.opt span{flex:1}.opt i{color:var(--sub);font-style:normal;font-size:13px}
+.act{display:flex;gap:10px;margin-top:14px}.act button{flex:1;padding:12px;border-radius:12px;border:1px solid var(--accent);font:700 15px var(--ff);cursor:pointer;background:var(--bg);color:var(--accent)}.act .go{background:var(--accent);color:var(--on)}
+#demo{display:none;margin:10px auto 0}
+@media(prefers-reduced-motion:reduce){#sheet{transition:none}}
 </style></head>
 <body data-theme="warm">
-<header id="head"></header><nav id="nav"></nav>
+<header id="head"></header>
+<div class="bar"><div class="row">
+<input id="q" type="search" placeholder="Search dishes" aria-label="Search dishes">
+<div class="seg" id="vegseg" hidden>
+<button data-v="all" aria-pressed="true">All</button><button data-v="veg" aria-pressed="false">Veg</button><button data-v="nonveg" aria-pressed="false">Non-veg</button></div>
+<nav id="nav"></nav></div></div>
 <main id="main"><div id="msg">Loading menu…</div></main>
-<footer><a id="rep" href="#">Report this menu</a></footer>
+<footer><select id="demo" aria-label="Preview theme"></select><a id="rep" href="#">Report this menu</a></footer>
+<button id="fab" hidden>Filter<b id="cnt">0</b></button>
+<div id="shade"></div>
+<div id="sheet" role="dialog" aria-label="Filter menu"><h2 style="margin-top:0">Categories</h2><div id="cats"></div>
+<label class="opt"><input type="checkbox" id="avail"><span>Available now</span></label>
+<div class="act"><button id="clr">Clear</button><button class="go" id="show">Show dishes</button></div></div>
 <script>
-const API='https://api.wildappz.in/menus/', SUPPORT='help@wildappz.in';
+const API='https://api.wildappz.in/menus/',SUPPORT='help@wildappz.in';
+const THEMES=['warm','dark','fresh','coffee','classic','lightred','noirgold','honey'];
 const $=id=>document.getElementById(id);
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
-const id=(new URLSearchParams(location.search).get('m')||'').toLowerCase();
-const ck='menu:'+id;
+const P=new URLSearchParams(location.search),id=(P.get('m')||'').toLowerCase(),ck='menu:'+id;
+const S={q:'',veg:'all',cats:new Set(),avail:false};let M=null;
 $('rep').href='mailto:'+SUPPORT+'?subject='+encodeURIComponent('Report menu '+id);
 const money=v=>typeof v==='number'?'₹'+v:String(v);
-function render(m){
-  document.title=m.name;document.body.dataset.theme=m.theme||'warm';
-  const h=$('head');h.textContent='';h.append(el('h1',null,m.name));
-  if(m.data.tagline)h.append(el('p',null,m.data.tagline));
-  const nav=$('nav'),main=$('main');nav.textContent='';main.textContent='';
-  (m.data.sections||[]).forEach((s,i)=>{
-    const a=el('a',null,s.title);a.href='#s'+i;nav.append(a);
-    const t=el('h2',null,s.title);t.id='s'+i;main.append(t);
-    (s.items||[]).forEach(it=>{
-      const row=el('div','item'+(it.available===false?' off':'')),l=el('div'),n=el('div','n');
-      if(it.veg!==undefined)n.append(el('span','dot '+(it.veg?'v':'nv')));
-      n.append(document.createTextNode(it.name||''));l.append(n);
-      if(it.desc)l.append(el('div','d',it.desc));
-      if(it.available===false)l.append(el('div','d','Not available right now'));
-      const p=el('div','p');
-      if(it.variants&&it.variants.length)p.textContent=it.variants.map(v=>v.label+' '+money(v.price)).join(' · ');
-      else if(it.price!=null&&it.price!=='')p.textContent=money(it.price);
-      row.append(l,p);main.append(row);
-    });
-  });
+const DEMO={name:'Spice Route Kitchen',theme:'noirgold',data:{tagline:'Hyderabadi flavours, made fresh',sections:[
+{title:'Biryanis',items:[{name:'Chicken Dum Biryani',price:249,desc:'Slow-cooked with saffron',veg:false},{name:'Paneer Biryani',price:219,veg:true},{name:'Veg Dum Biryani',price:189,veg:true},{name:'Mutton Biryani',price:329,veg:false,available:false}]},
+{title:'Starters',items:[{name:'Chicken 65',price:199,veg:false},{name:'Paneer Tikka',price:189,veg:true}]},
+{title:'Desserts',items:[{name:'Double Ka Meetha',price:99,veg:true},{name:'Qubani Ka Meetha',price:119,veg:true}]},
+{title:'Beverages',items:[{name:'Irani Chai',variants:[{label:'S',price:20},{label:'L',price:35}],veg:true},{name:'Sweet Lassi',price:79,veg:true}]}]}};
+function vis(it){
+ if(S.avail&&it.available===false)return false;
+ if(S.veg==='veg'&&it.veg!==true)return false;
+ if(S.veg==='nonveg'&&it.veg!==false)return false;
+ if(S.q&&!((it.name||'')+' '+(it.desc||'')).toLowerCase().includes(S.q))return false;return true}
+function paint(){
+ const nav=$('nav'),main=$('main');nav.textContent='';main.textContent='';let shown=0;
+ (M.data.sections||[]).forEach((s,i)=>{
+  if(S.cats.size&&!S.cats.has(s.title))return;
+  const items=(s.items||[]).filter(vis);if(!items.length)return;shown++;
+  const a=el('a',null,s.title);a.href='#s'+i;nav.append(a);
+  const t=el('h2',null,s.title);t.id='s'+i;main.append(t);
+  items.forEach(it=>{
+   const row=el('div','item'+(it.available===false?' off':'')),l=el('div'),n=el('div','n');
+   if(typeof it.veg==='boolean')n.append(el('span','dot '+(it.veg?'v':'nv')));
+   n.append(document.createTextNode(it.name||''));l.append(n);
+   if(it.desc)l.append(el('div','d',it.desc));
+   if(it.available===false)l.append(el('div','d','Not available right now'));
+   const p=el('div','p');
+   if(it.variants&&it.variants.length)p.textContent=it.variants.map(v=>v.label+' '+money(v.price)).join(' · ');
+   else if(it.price!=null&&it.price!=='')p.textContent=money(it.price);
+   row.append(l,p);main.append(row)})});
+ if(!shown)main.append(Object.assign(el('div',null,'No dishes match. Try clearing the filters.'),{id:'msg'}));
+ $('cnt').textContent=S.cats.size+(S.avail?1:0);
 }
-function fail(t){$('nav').textContent='';$('main').textContent='';$('main').append(el('div',null,t)).id='msg'}
-if(!/^[a-z0-9]{8}$/.test(id))fail('Menu not found.');
-else{
-  let shown=false;
-  try{const c=localStorage.getItem(ck);if(c){render(JSON.parse(c));shown=true}}catch(e){}   // instant on slow internet
-  fetch(API+id).then(async r=>{
-    if(r.status===404){try{localStorage.removeItem(ck)}catch(e){}fail('This menu is no longer available.');return}
-    const m=await r.json();render(m);try{localStorage.setItem(ck,JSON.stringify(m))}catch(e){}
-  }).catch(()=>{if(!shown)fail('Could not load the menu. Check your connection.')});
-}
+function setup(m){
+ M=m;const th=P.get('theme');
+ document.body.dataset.theme=THEMES.includes(th)?th:(THEMES.includes(m.theme)?m.theme:'warm');
+ document.title=m.name;const h=$('head');h.textContent='';h.append(el('h1',null,m.name));
+ if(m.data.tagline)h.append(el('p',null,m.data.tagline));
+ const secs=m.data.sections||[];
+ $('vegseg').hidden=!secs.some(s=>(s.items||[]).some(i=>typeof i.veg==='boolean'));
+ const c=$('cats');c.textContent='';
+ secs.forEach(s=>{const lb=el('label','opt'),cb=document.createElement('input');cb.type='checkbox';cb.checked=S.cats.has(s.title);
+  cb.onchange=()=>{cb.checked?S.cats.add(s.title):S.cats.delete(s.title);paint()};
+  lb.append(cb,el('span',null,s.title),el('i',null,(s.items||[]).length));c.append(lb)});
+ $('fab').hidden=secs.length<2;paint()}
+function fail(t){$('nav').textContent='';$('main').textContent='';$('main').append(Object.assign(el('div',null,t),{id:'msg'}));$('fab').hidden=true}
+$('q').oninput=e=>{S.q=e.target.value.trim().toLowerCase();if(M)paint()};
+document.querySelectorAll('#vegseg button').forEach(b=>b.onclick=()=>{S.veg=b.dataset.v;
+ document.querySelectorAll('#vegseg button').forEach(x=>x.setAttribute('aria-pressed',x===b));paint()});
+const open=v=>{$('sheet').classList.toggle('open',v);$('shade').style.display=v?'block':'none'};
+$('fab').onclick=()=>open(true);$('shade').onclick=()=>open(false);$('show').onclick=()=>open(false);
+$('avail').onchange=e=>{S.avail=e.target.checked;paint()};
+$('clr').onclick=()=>{S.cats.clear();S.avail=false;$('avail').checked=false;document.querySelectorAll('#cats input').forEach(x=>x.checked=false);paint()};
+if(P.get('demo')){
+ const d=$('demo');d.style.display='inline-block';THEMES.forEach(t=>d.append(new Option(t,t)));d.value=DEMO.theme;
+ d.onchange=()=>{document.body.dataset.theme=d.value};setup(DEMO);d.dispatchEvent(new Event('change'))}
+else if(!/^[a-z0-9]{8}$/.test(id))fail('Menu not found.');
+else{let shown=false;
+ try{const c=localStorage.getItem(ck);if(c){setup(JSON.parse(c));shown=true}}catch(e){}
+ fetch(API+id).then(async r=>{
+  if(r.status===404){try{localStorage.removeItem(ck)}catch(e){}fail('This menu is no longer available.');return}
+  const m=await r.json();setup(m);try{localStorage.setItem(ck,JSON.stringify(m))}catch(e){}
+ }).catch(()=>{if(!shown)fail('Could not load the menu. Check your connection.')})}
 </script></body></html>
