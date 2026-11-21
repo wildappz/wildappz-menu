@@ -12,6 +12,7 @@ body[data-theme=classic]{--bg:#f4f4f5;--card:#fff;--text:#18181b;--sub:#71717a;-
 body[data-theme=lightred]{--bg:#fff;--card:#fff6f5;--text:#1c1917;--sub:#78716c;--accent:#e11d2e}
 body[data-theme=noirgold]{--bg:#15130f;--card:#201c15;--text:#f3ead7;--sub:#a89c82;--accent:#e0a526;--on:#15130f;--fh:Georgia,"Times New Roman",serif}
 body[data-theme=honey]{--bg:#fbf1d9;--card:#fff9e8;--text:#3a2a14;--sub:#85704d;--accent:#c97f00;--fh:Georgia,"Times New Roman",serif}
+[hidden]{display:none!important}
 *{box-sizing:border-box}
 html{scroll-padding-top:120px}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 var(--ff);padding-bottom:110px}
@@ -23,9 +24,9 @@ header p{margin:8px 0 0;color:var(--sub)}
 #q{width:100%;padding:11px 16px;border-radius:99px;border:1px solid color-mix(in srgb,var(--text) 15%,transparent);background:var(--card);color:var(--text);font:inherit}
 #q:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .seg{display:flex;gap:6px;margin-top:8px}
-.seg button,nav a{border:1px solid color-mix(in srgb,var(--text) 14%,transparent);background:var(--card);color:var(--text);border-radius:99px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap}
-.seg button[aria-pressed=true]{background:var(--accent);color:var(--on);border-color:var(--accent)}
-nav{display:flex;gap:6px;overflow-x:auto;padding:8px 0 4px}
+.seg button,#chips button{border:1px solid color-mix(in srgb,var(--text) 14%,transparent);background:var(--card);color:var(--text);border-radius:99px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.seg button[aria-pressed=true],#chips button[aria-pressed=true]{background:var(--accent);color:var(--on);border-color:var(--accent)}
+#chips{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0 2px}
 main{padding:4px 16px;max-width:640px;margin:0 auto}
 h2{font:700 20px var(--fh);margin:26px 2px 10px;color:var(--accent)}
 .item{background:var(--card);border:1px solid color-mix(in srgb,var(--text) 8%,transparent);border-radius:16px;padding:13px 15px;margin-bottom:9px;display:flex;justify-content:space-between;gap:14px}
@@ -50,10 +51,9 @@ footer{text-align:center;padding:16px;font-size:12px;color:var(--sub)}footer a{c
 <div class="bar"><div class="row">
 <input id="q" type="search" placeholder="Search dishes" aria-label="Search dishes">
 <div class="seg" id="vegseg" hidden>
-<button data-v="all" aria-pressed="true">All</button></button>
-<!-- <button data-v="veg" aria-pressed="false">Veg</button><button data-v="nonveg" aria-pressed="false">Non-veg -->
-</div>
-<nav id="nav"></nav></div></div>
+<button data-v="all" aria-pressed="true">All</button><button data-v="veg" aria-pressed="false">Veg</button><button data-v="nonveg" aria-pressed="false">Non-veg</button></div>
+</div></div>
+<div class="row" style="padding:0 16px"><div id="chips"></div></div>
 <main id="main"><div id="msg">Loading menu…</div></main>
 <footer><select id="demo" aria-label="Preview theme"></select><a id="rep" href="#">Report this menu</a></footer>
 <button id="fab" hidden>Filter<b id="cnt">0</b></button>
@@ -81,11 +81,10 @@ function vis(it){
  if(S.veg==='nonveg'&&it.veg!==false)return false;
  if(S.q&&!((it.name||'')+' '+(it.desc||'')).toLowerCase().includes(S.q))return false;return true}
 function paint(){
- const nav=$('nav'),main=$('main');nav.textContent='';main.textContent='';let shown=0;
+ const main=$('main');main.textContent='';let shown=0;const secs=M.data.sections||[];
  (M.data.sections||[]).forEach((s,i)=>{
   if(S.cats.size&&!S.cats.has(s.title))return;
   const items=(s.items||[]).filter(vis);if(!items.length)return;shown++;
-  const a=el('a',null,s.title);a.href='#s'+i;nav.append(a);
   const t=el('h2',null,s.title);t.id='s'+i;main.append(t);
   items.forEach(it=>{
    const row=el('div','item'+(it.available===false?' off':'')),l=el('div'),n=el('div','n');
@@ -99,6 +98,8 @@ function paint(){
    row.append(l,p);main.append(row)})});
  if(!shown)main.append(Object.assign(el('div',null,'No dishes match. Try clearing the filters.'),{id:'msg'}));
  $('cnt').textContent=S.cats.size+(S.avail?1:0);
+ const ch=$('chips');if(ch)[...ch.children].forEach((b,i)=>b.setAttribute('aria-pressed',i===0?S.cats.size===0:S.cats.has(b.textContent)));
+ document.querySelectorAll('#cats input').forEach((x,i)=>{if(secs[i])x.checked=S.cats.has(secs[i].title)});
 }
 function setup(m){
  M=m;const th=P.get('theme');
@@ -111,8 +112,14 @@ function setup(m){
  secs.forEach(s=>{const lb=el('label','opt'),cb=document.createElement('input');cb.type='checkbox';cb.checked=S.cats.has(s.title);
   cb.onchange=()=>{cb.checked?S.cats.add(s.title):S.cats.delete(s.title);paint()};
   lb.append(cb,el('span',null,s.title),el('i',null,(s.items||[]).length));c.append(lb)});
+ const ch=$('chips');
+ if(ch){ch.textContent='';
+  const mk=(label,fn)=>{const b=el('button',null,label);b.type='button';b.onclick=fn;ch.append(b)};
+  mk('All',()=>{S.cats.clear();paint()});
+  secs.forEach(s=>mk(s.title,()=>{S.cats.clear();S.cats.add(s.title);paint()}));
+  ch.hidden=secs.length<2}
  $('fab').hidden=secs.length<2;paint()}
-function fail(t){$('nav').textContent='';$('main').textContent='';$('main').append(Object.assign(el('div',null,t),{id:'msg'}));$('fab').hidden=true}
+function fail(t){$('chips').textContent='';$('main').textContent='';$('main').append(Object.assign(el('div',null,t),{id:'msg'}));$('fab').hidden=true}
 $('q').oninput=e=>{S.q=e.target.value.trim().toLowerCase();if(M)paint()};
 document.querySelectorAll('#vegseg button').forEach(b=>b.onclick=()=>{S.veg=b.dataset.v;
  document.querySelectorAll('#vegseg button').forEach(x=>x.setAttribute('aria-pressed',x===b));paint()});
